@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from 'next/navigation'
 import Head from "next/head";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
-  
+  const router = useRouter()
 
   return (
     <>
@@ -19,7 +20,7 @@ export default function Home() {
         {/* Navbar */}
         <header className="sticky top-0 z-10 flex items-center justify-between bg-green-600 px-4 py-4 shadow-md">
           <h1 className="text-xl font-bold text-white">CO2 Tracker</h1>
-          <button className="text-white bg-blue-500 hover:bg-blue-700 font-bold py-2 px-4 rounded">
+          <button className="text-white bg-blue-500 hover:bg-blue-700 font-bold py-2 px-4 rounded" onClick={() => router.push('/sign-in')}>
             Login
           </button>
         </header>
