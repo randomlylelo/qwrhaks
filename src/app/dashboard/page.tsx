@@ -14,7 +14,7 @@ type Entry = {
   _id?: string;
   miles: number;
   totalTime: string;
-  createdAt: string; // from MongoDB, an ISO date string
+  createdAt: string; // ISO date string from MongoDB
   image?: string | null;
 };
 
@@ -48,10 +48,12 @@ export default function Page() {
 
   const renderTileContent = ({ date, view }: { date: Date; view: string }) => {
     if (view !== 'month') return null;
+
     const matchingEntries = entries.filter((entry) => {
       const entryDate = new Date(entry.createdAt);
       return entryDate.toDateString() === date.toDateString();
     });
+
     if (matchingEntries.length > 0) {
       const dotColor = getColorForEntry(matchingEntries[0]);
       return (
@@ -79,40 +81,49 @@ export default function Page() {
       </Head>
 
       {/* Header */}
-      <header className='sticky top-0 z-10 flex items-center justify-between bg-green-600 px-4 py-4 shadow-md'>
-        <h1 className='text-xl font-bold text-white'>CO2 Tracker</h1>
+      <header className='sticky top-0 z-10 bg-green-600 shadow-md'>
+        <div className='mx-auto flex max-w-screen-lg items-center justify-between px-4 py-4'>
+          <h1 className='text-xl font-bold text-white'>CO2 Tracker</h1>
+        </div>
       </header>
 
       {/* Main */}
       <main className='flex-grow px-4 py-6'>
-        {/* Responsive container for user info / streak / popups */}
-        <div className='flex flex-col sm:flex-row items-center mb-8 space-y-4 sm:space-y-0 sm:space-x-4'>
-          <div className='flex items-center'>
-            <User className='w-16 h-16 mr-4' />
+        <div className='mx-auto max-w-screen-lg'>
+          {/* Desktop-friendly grid layout */}
+          <div className='grid grid-cols-1 gap-8 md:grid-cols-2'>
+            {/* Left Column: User info, streak, and popups */}
             <div>
-              <h2 className='text-xl font-bold'>Daily Streak:</h2>
-              <div id='streak-count' className='text-xl font-bold'>
-                0
+              <div className='mb-8 flex items-center space-x-4'>
+                <User className='h-16 w-16' />
+                <div>
+                  <h2 className='text-xl font-bold'>Daily Streak:</h2>
+                  <div id='streak-count' className='text-xl font-bold'>
+                    0
+                  </div>
+                </div>
+              </div>
+
+              <div className='mb-6 flex flex-col space-y-2'>
+                {/* Log run popup */}
+                <LogRunPopup onEntryCreated={handleEntryCreated} />
+
+                {/* Wrapped popup */}
+                <EmissionsWrappedPopup />
+              </div>
+            </div>
+
+            {/* Right Column: Heading and Calendar */}
+            <div>
+              <h1 className='mb-4 text-2xl font-semibold'>
+                Track Your CO2 Emissions
+              </h1>
+              {/* Calendar container */}
+              <div className='max-w-full'>
+                <Calendar tileContent={renderTileContent} />
               </div>
             </div>
           </div>
-
-          <div className='flex flex-col space-y-2'>
-            {/* Log run popup */}
-            <LogRunPopup onEntryCreated={handleEntryCreated} />
-
-            {/* Wrapped popup */}
-            <EmissionsWrappedPopup />
-          </div>
-        </div>
-
-        <h1 className='mb-4 text-2xl font-semibold'>
-          Track Your CO2 Emissions
-        </h1>
-
-        {/* Make calendar container responsive */}
-        <div className='max-w-full overflow-x-auto'>
-          <Calendar tileContent={renderTileContent} />
         </div>
       </main>
 
