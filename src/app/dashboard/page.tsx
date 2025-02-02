@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { User } from 'lucide-react';
 import Head from "next/head";
 import { Calendar } from "react-calendar";
@@ -19,6 +20,14 @@ export default function Page() {
     //   // For demonstration, we'll just set a dummy info
     //   setInfo(`Information for ${newDate.toDateString()}`);
     // };
+
+    const handleOnClick = async () => {
+      console.log('Hello');
+      const response = await fetch('/api');
+      const data = await response.json();
+      console.log(data);
+    }
+
     return (
         <>
           <Head>
@@ -57,6 +66,9 @@ export default function Page() {
               />
             </div>
 
+            <Button onClick={handleOnClick}>
+              Hello
+            </Button>
     
             </main>
     
