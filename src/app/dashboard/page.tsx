@@ -8,8 +8,8 @@ import "react-calendar/dist/Calendar.css";
 
 import { Button } from "@/components/ui/button";
 import LogRunPopup from "./LogRunPopup";
+import EmissionsWrappedPopup from "./EmissionsWrappedPopup";
 
-// Define the shape of your entries
 type Entry = {
   _id?: string;
   miles: number;
@@ -21,13 +21,10 @@ type Entry = {
 export default function Page() {
   const [entries, setEntries] = useState<Entry[]>([]);
 
-  // Fetch all entries from the server
   const fetchEntries = async () => {
     try {
       const response = await fetch("/api/entries");
-      if (!response.ok) {
-        throw new Error("Failed to fetch entries");
-      }
+      if (!response.ok) throw new Error("Failed to fetch entries");
       const data = await response.json();
       setEntries(data);
     } catch (error) {
@@ -35,43 +32,27 @@ export default function Page() {
     }
   };
 
-  // Run once on mount to load entries
   useEffect(() => {
     fetchEntries();
   }, []);
 
-  /**
-   * Called after LogRunPopup successfully saves an entry.
-   * We'll refetch the entries to update the calendar.
-   */
   const handleEntryCreated = () => {
     fetchEntries();
   };
 
-  /**
-   * Simple example function to map miles -> color for the day.
-   */
   function getColorForEntry(entry: Entry) {
     if (entry.miles < 5) return "green";
     if (entry.miles < 10) return "orange";
     return "red";
   }
 
-  /**
-   * For each day in the month view, we check if there's an entry.
-   * If yes, we add a small colored dot.
-   */
   const renderTileContent = ({ date, view }: { date: Date; view: string }) => {
     if (view !== "month") return null;
-
-    // Filter entries matching this date (ignoring time by comparing date strings).
     const matchingEntries = entries.filter((entry) => {
       const entryDate = new Date(entry.createdAt);
       return entryDate.toDateString() === date.toDateString();
     });
-
     if (matchingEntries.length > 0) {
-      // Use the first entry or compute a combined color if you prefer
       const dotColor = getColorForEntry(matchingEntries[0]);
       return (
         <div
@@ -97,30 +78,47 @@ export default function Page() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      {/* Header */}
       <header className="sticky top-0 z-10 flex items-center justify-between bg-green-600 px-4 py-4 shadow-md">
         <h1 className="text-xl font-bold text-white">CO2 Tracker</h1>
       </header>
 
+      {/* Main */}
       <main className="flex-grow px-4 py-6">
-        <div className="flex items-center mb-8">
-          <User className="w-16 h-16 mr-4" />
-          <div>
-            <h2 className="text-xl font-bold">Daily Streak: </h2>
-            <div id="streak-count" className="text-xl font-bold">
-              0
+        {/* Responsive container for user info / streak / popups */}
+        <div className="flex flex-col sm:flex-row items-center mb-8 space-y-4 sm:space-y-0 sm:space-x-4">
+          <div className="flex items-center">
+            <User className="w-16 h-16 mr-4" />
+            <div>
+              <h2 className="text-xl font-bold">Daily Streak:</h2>
+              <div id="streak-count" className="text-xl font-bold">
+                0
+              </div>
             </div>
           </div>
-          {/* Pass the callback to LogRunPopup */}
-          <LogRunPopup onEntryCreated={handleEntryCreated} />
+
+          <div className="flex space-x-2">
+            {/* Log run popup */}
+            <LogRunPopup onEntryCreated={handleEntryCreated} />
+
+            {/* Wrapped popup */}
+            <EmissionsWrappedPopup />
+          </div>
         </div>
 
         <h1 className="mb-4 text-2xl font-semibold">Track Your CO2 Emissions</h1>
-        <Calendar tileContent={renderTileContent} />
+
+        {/* Make calendar container responsive */}
+        <div className="max-w-full overflow-x-auto">
+          <Calendar tileContent={renderTileContent} />
+        </div>
       </main>
 
+      {/* Footer */}
       <footer className="mt-auto py-4 text-center text-sm text-gray-500">
         <p>© {new Date().getFullYear()} CO2 Tracker App</p>
       </footer>
     </>
   );
 }
+
