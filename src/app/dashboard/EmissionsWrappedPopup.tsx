@@ -17,22 +17,22 @@ const sampleSlides = [
   {
     title: "Your Carbon Overview",
     description: "You traveled 250 miles this month, emitting ~50kg of CO2.",
-    imageUrl: "/images/footprint.png",
+    imageUrl: "/images/footprint.webp",
   },
   {
     title: "Most Frequent Trip",
     description: "Your daily commute was repeated 20 times this month!",
-    imageUrl: "/images/commute.png",
+    imageUrl: "/images/commute.webp",
   },
   {
     title: "Longest Trip",
     description: "A 150-mile road trip on the 15th contributed ~30kg of CO2.",
-    imageUrl: "/images/roadtrip.png",
+    imageUrl: "/images/roadtrip.webp",
   },
   {
     title: "Keep It Up!",
     description: "You've saved 10% more CO2 than last month by carpooling.",
-    imageUrl: "/images/savings.png",
+    imageUrl: "/images/savings.webp",
   },
 ];
 
@@ -96,7 +96,7 @@ export default function EmissionsWrappedPopup() {
           <img
             src={slide.imageUrl}
             alt={slide.title}
-            className="w-24 h-24 sm:w-32 sm:h-32 object-contain"
+            className="w-44 h-44 sm:w-44 sm:h-44 object-contain"
           />
 
           {/* Buttons: stack on mobile, side-by-side on larger screens */}
