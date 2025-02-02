@@ -10,9 +10,9 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@/components/ui/dialog'; // Adjust the import paths as needed
-import { Input } from '@/components/ui/input'; // Adjust the import paths as needed
-import { Button } from '@/components/ui/button'; // Adjust the import paths as needed
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 export default function LogRunPopup() {
   const [open, setOpen] = useState(false);
@@ -20,22 +20,48 @@ export default function LogRunPopup() {
   const [totalTime, setTotalTime] = useState('');
   const [image, setImage] = useState<File | null>(null);
 
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Process the form data (replace this with your actual processing logic)
-    console.log('Number of Miles:', miles);
-    console.log('Total Time:', totalTime);
-    console.log('Image File:', image);
+    try {
+      // If you just want to send text or numeric fields, you can do JSON
+      // (Assuming the image is handled elsewhere or as a URL/base64)
+      const response = await fetch('/api/entries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          miles,
+          totalTime,
+          // If you plan to store the image as base64 or a URL, handle that here.
+          // For example, if you want to do a quick base64 convert (not recommended for large images):
+          // image: image ? await fileToBase64(image) : null,
+        }),
+      });
 
-    // Reset the form or perform any additional processing
+      if (!response.ok) {
+        // Handle error responses
+        const errorData = await response.json();
+        console.error('Error creating record:', errorData.error);
+        return;
+      }
 
-    // Close the popup after submission
-    setOpen(false);
+      // Success
+      const data = await response.json();
+      console.log('Record created successfully:', data);
+
+      // Close popup & reset fields
+      setOpen(false);
+      setMiles('');
+      setTotalTime('');
+      setImage(null);
+    } catch (error) {
+      console.error('Error creating record:', error);
+    }
   };
 
-  // Handle image file selection
+  // For selecting the image file
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setImage(e.target.files[0]);
@@ -46,9 +72,7 @@ export default function LogRunPopup() {
     <Dialog open={open} onOpenChange={setOpen}>
       {/* Trigger Button to Open the Popup */}
       <DialogTrigger asChild>
-        <Button
-          className='mt-4 px-4 py-2 bg-green-600 text-white font-bold rounded'
-        >
+        <Button className='mt-4 px-4 py-2 bg-green-600 text-white font-bold rounded'>
           Enter Daily Input
         </Button>
       </DialogTrigger>
@@ -56,15 +80,14 @@ export default function LogRunPopup() {
       {/* Popup Content */}
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
-          <DialogTitle>Log Your Run</DialogTitle>
+          <DialogTitle>Log Your Emissions</DialogTitle>
           <DialogDescription>
-            Fill in the details of your run below.
+            Fill in the details of your car trip today below.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit}>
           <div className='space-y-4 py-4'>
-            {/* Number of Miles Input */}
             <div>
               <label
                 htmlFor='miles'
@@ -83,7 +106,6 @@ export default function LogRunPopup() {
               />
             </div>
 
-            {/* Total Time Input */}
             <div>
               <label
                 htmlFor='totalTime'
@@ -101,7 +123,6 @@ export default function LogRunPopup() {
               />
             </div>
 
-            {/* Image Upload Input */}
             <div>
               <label
                 htmlFor='image'
@@ -118,13 +139,8 @@ export default function LogRunPopup() {
             </div>
           </div>
 
-          {/* Cancel and Submit Buttons */}
           <DialogFooter>
-            <Button
-              variant='outline'
-              type='button'
-              onClick={() => setOpen(false)}
-            >
+            <Button variant='outline' type='button' onClick={() => setOpen(false)}>
               Cancel
             </Button>
             <Button type='submit'>Submit</Button>
