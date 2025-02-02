@@ -1,17 +1,27 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/database';
 
+export async function GET() {
+  try {
+    const client = await clientPromise;
+    const db = client.db('db');
+
+    // Retrieve all documents
+    const entries = await db.collection('entries').find({}).toArray();
+    return NextResponse.json(entries, { status: 200 });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const client = await clientPromise;
     const db = client.db('db');
 
-    // For JSON requests, parse the request body as JSON
     const body = await request.json();
+    const { miles, totalTime, date, image } = body;
 
-    const { miles, totalTime, image } = body; // Destructure fields you expect
-    
-    // (Optional) Validate your incoming data here
     if (!miles || !totalTime) {
       return NextResponse.json(
         { error: 'Missing required fields (miles, totalTime)' },
@@ -19,16 +29,28 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create a record to insert
+    // Use client-provided date if available, otherwise use "now"
+    let entryDate: Date;
+    if (date) {
+      // Attempt to parse the client date
+      entryDate = new Date(date);
+      if (isNaN(entryDate.getTime())) {
+        // If parsing fails, fall back
+        entryDate = new Date();
+      }
+    } else {
+      entryDate = new Date();
+    }
+
+    // Create the record
     const newEntry = {
       miles,
       totalTime,
-      // If you're storing just a string or base64 for the image, you can include it
       image: image || null,
-      createdAt: new Date(),
+      // store as "createdAt" or "date", up to you
+      createdAt: entryDate,
     };
 
-    // Insert into your collection (e.g., "runs")
     const result = await db.collection('entries').insertOne(newEntry);
 
     return NextResponse.json({
