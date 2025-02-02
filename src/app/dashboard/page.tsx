@@ -5,10 +5,7 @@ import { User } from 'lucide-react';
 import Head from "next/head";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
-
-function handleDailyInput() {
-    alert('Enter your daily input!');
-}
+import LogRunPopup from "./LogRunPopup";
 
 export default function Page() {
     return (
@@ -32,10 +29,7 @@ export default function Page() {
                         <h2 className="text-xl font-bold mb-4">Daily Streak:</h2>
                         <div id="streak-count" className="text-xl font-bold mb-4">0</div>
                     </div>
-                    <button
-                    className="mt-4 px-4 py-2 bg-blue-600 text-white font-bold rounded"
-                    onClick={handleDailyInput}>Enter Daily Input
-                    </button>
+                    <LogRunPopup />
                 </div>
             </div>
             <div className="rounded-md border p-4 mb-6">
