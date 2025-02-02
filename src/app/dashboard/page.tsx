@@ -3,11 +3,21 @@
 import React, { useState } from "react";
 import { User } from 'lucide-react';
 import Head from "next/head";
-import { Calendar } from "@/components/ui/calendar";
-import { Button } from "@/components/ui/button";
+import { Calendar } from "react-calendar";
 import LogRunPopup from "./LogRunPopup";
 
+
 export default function Page() {
+    const [date, setDate] = useState<Date | null>(new Date());
+    const [info, setInfo] = useState<string | null>(null);
+
+    const onDateChange = (value: Date | Date[]) => {
+      const newDate = Array.isArray(value) ? value[0] : value;
+      setDate(newDate);
+      // Fetch or set the information for the selected date
+      // For demonstration, we'll just set a dummy info
+      setInfo(`Information for ${newDate.toDateString()}`);
+    };
     return (
         <>
           <Head>
@@ -33,8 +43,17 @@ export default function Page() {
                 </div>
             </div>
 
-            <div className="rounded-md border p-4 mb-0 m-0 w-full h-full">
-                <Calendar />
+            <div>
+              <h1>Track Your CO2 Emissions</h1>
+              <Calendar
+                onChange={onDateChange}
+                value={date}
+                tileContent={({ date, view }) => view === 'month' && (
+                  <button onClick={() => onDateChange(date)}>
+                    {date.getDate()}
+                  </button>
+                )}
+              />
             </div>
 
     
