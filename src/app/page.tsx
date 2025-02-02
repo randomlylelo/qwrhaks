@@ -1,45 +1,53 @@
-import { Calendar } from "@/components/ui/calendar"
-import { Button } from "@/components/ui/button"
+import React from 'react'
+import Head from 'next/head'
+// Import your shadcn calendar component (or a placeholder)
+import { Calendar } from '@/components/ui/calendar'
+// Import your shadcn button component (or a placeholder)
+import { Button } from '@/components/ui/button'
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      {/* Navbar */}
-      <nav className="bg-green-500 text-white py-4 px-6">
-        <h1 className="text-2xl font-bold">My CO2 Tracker</h1>
-      </nav>
+    <>
+      <Head>
+        <title>CO2 Tracker</title>
+        <meta name="description" content="Track your CO2 emissions easily." />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
 
-      {/* Main Content */}
-      <main className="flex-grow flex flex-col items-center justify-center p-4">
-        <h2 className="text-xl font-semibold mb-6">Your CO2 Calendar</h2>
+      {/* Main container for the page */}
+      <div className="flex flex-col min-h-screen bg-white">
 
-        {/* shadcn/ui Calendar */}
-        <div className="mb-6 w-full max-w-sm">
-          <Calendar className="mx-auto" />
-          {/*
-            Optionally pass props like:
-            <Calendar
-              mode="single"
-              onSelect={(date) => console.log(date)}
-              className="mx-auto"
-            />
-          */}
-        </div>
+        {/* Top Navbar */}
+        <header className="sticky top-0 z-10 flex items-center justify-between bg-green-600 px-4 py-4 shadow-md">
+          <h1 className="text-xl font-bold text-white">CO2 Tracker</h1>
+          {/* You could add a menu icon or user profile icon here */}
+        </header>
 
-        {/* shadcn/ui Button */}
-        <Button
-          onClick={() => {
-            alert("Tracking your CO2 usage!");
-          }}
-        >
-          Track CO2
-        </Button>
-      </main>
+        {/* Content Area */}
+        <main className="flex-grow px-4 py-6">
+          {/* Title or prompt */}
+          <h2 className="text-lg font-semibold mb-4 text-gray-800">
+            Select a Day to Log Your Emissions
+          </h2>
 
-      {/* Footer (Optional) */}
-      <footer className="bg-green-500 text-white py-2 text-center">
-        <p>© {new Date().getFullYear()} CO2 Tracker</p>
-      </footer>
-    </div>
+          {/* Calendar component (shadcn placeholder) */}
+          <div className="rounded-md border p-4 mb-6">
+            <Calendar />
+          </div>
+
+          {/* Button below the calendar */}
+          <div className="flex justify-center">
+            <Button variant="default" className="w-full sm:w-auto">
+              Add Emission Log
+            </Button>
+          </div>
+        </main>
+
+        {/* Optional Footer */}
+        <footer className="mt-auto py-4 text-center text-sm text-gray-500">
+          <p>© {new Date().getFullYear()} CO2 Tracker App</p>
+        </footer>
+      </div>
+    </>
   )
 }
