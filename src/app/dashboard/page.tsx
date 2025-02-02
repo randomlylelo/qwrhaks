@@ -31,16 +31,18 @@ export default function Page() {
                     <div className="flex items-center">
                         <h2 className="text-xl font-bold mb-4">Daily Streak:</h2>
                         <div id="streak-count" className="text-xl font-bold mb-4">0</div>
-                    </div>
+                    </div> 
                     <button
-                    className="mt-4 px-4 py-2 bg-blue-600 text-white font-bold rounded"
+                    className="mt-4 px-4 py-2 bg-green-600 text-white font-bold rounded"
                     onClick={handleDailyInput}>Enter Daily Input
                     </button>
                 </div>
             </div>
-            <div className="rounded-md border p-4 mb-6">
+
+            <div className="rounded-md border p-4 mb-0 m-0 w-full h-full">
                 <Calendar />
             </div>
+
     
             </main>
     
