@@ -1,102 +1,91 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Head from "next/head";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-// Replace with your actual shadcn Button component
+import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
-
-// Placeholder image paths — replace with your actual URLs or /public paths
-const IMAGE_PATH_1 = "/images/pic1.jpg";
-const IMAGE_PATH_2 = "/images/pic2.jpg";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export default function Home() {
-  const [aiResponse, setAiResponse] = React.useState("");
+  const [captionResult, setCaptionResult] = useState("");
 
-  // Handle button press to invoke Generative AI
-  async function handleButtonPress() {
+  const handleGenerateCaption = async () => {
     try {
-      // Initialize your GoogleGenerativeAI client
-      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-      // Get the model
-      const model = genAI.getGenerativeModel({ model: "models/gemini-1.5-pro" });
+      // In a real application, do NOT use process.env.API_KEY directly here.
+      // Instead, call an API route. This is just a demo.
+      const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
 
-      // Fetch images as arrayBuffers
-      const imageResp1 = await fetch(IMAGE_PATH_1).then((res) => res.arrayBuffer());
-      const imageResp2 = await fetch(IMAGE_PATH_2).then((res) => res.arrayBuffer());
+      const model = genAI.getGenerativeModel({
+        model: "models/gemini-1.5-pro",
+      });
 
-      // Generate content
+      // Fetch the image as ArrayBuffer
+      const imageResp = await fetch(
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Palace_of_Westminster_from_the_dome_on_Methodist_Central_Hall.jpg/2560px-Palace_of_Westminster_from_the_dome_on_Methodist_Central_Hall.jpg"
+      ).then((response) => response.arrayBuffer());
+
+      // Generate caption
       const result = await model.generateContent([
         {
           inlineData: {
-            data: Buffer.from(imageResp1).toString("base64"),
+            data: Buffer.from(imageResp).toString("base64"),
             mimeType: "image/jpeg",
           },
         },
-        {
-          inlineData: {
-            data: Buffer.from(imageResp2).toString("base64"),
-            mimeType: "image/jpeg",
-          },
-        },
-        "Generate a list of all the objects contained in both images.",
+        "Caption this image.",
       ]);
 
-      // Assuming .text() returns the content string
-      const textOutput = result.response.text();
+      // result.response.text() returns a Promise;
+      // if you want the string, await it or use then()
+      const caption = await result.response.text();
 
-      console.log("AI Response:", textOutput);
-      setAiResponse(textOutput);
+      console.log("Caption:", caption);
+      setCaptionResult(caption);
     } catch (error) {
-      console.error("Error generating AI content:", error);
-      setAiResponse("Error generating AI content. Check console for details.");
+      console.error("Error generating caption:", error);
     }
-  }
+  };
 
   return (
     <>
       <Head>
         <title>CO2 Tracker</title>
         <meta name="description" content="Track your CO2 emissions easily." />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <div className="flex flex-col min-h-screen bg-white">
-        {/* Top Navbar */}
+        {/* Navbar */}
         <header className="sticky top-0 z-10 flex items-center justify-between bg-green-600 px-4 py-4 shadow-md">
           <h1 className="text-xl font-bold text-white">CO2 Tracker</h1>
         </header>
 
-        {/* Main content */}
+        {/* Main Content */}
         <main className="flex-grow px-4 py-6">
           <h2 className="text-lg font-semibold mb-4 text-gray-800">
             Select a Day to Log Your Emissions
           </h2>
 
-          {/* 
-            Insert your calendar component here, e.g., 
-            <Calendar /> 
-            if you have one from shadcn or any other library 
-          */}
+          {/* Calendar (shadcn component) */}
           <div className="rounded-md border p-4 mb-6">
-            <p className="text-gray-600">[Calendar Component Placeholder]</p>
+            <Calendar />
           </div>
 
-          {/* Button that triggers the AI call */}
-          <div className="flex flex-col items-center">
-            <Button variant="default" className="w-full sm:w-auto" onClick={handleButtonPress}>
-              Call Generative AI
+          {/* Generate Caption Button */}
+          <div className="flex flex-col items-center space-y-4">
+            <Button variant="default" className="w-full sm:w-auto" onClick={handleGenerateCaption}>
+              Generate Image Caption
             </Button>
 
-            {aiResponse && (
-              <div className="mt-4 w-full max-w-md p-2 bg-gray-100 rounded">
-                <h3 className="font-bold mb-2">AI Response:</h3>
-                <p>{aiResponse}</p>
+            {captionResult && (
+              <div className="mt-4 p-4 border rounded-md max-w-sm bg-gray-50">
+                <p className="font-semibold">Caption:</p>
+                <p>{captionResult}</p>
               </div>
             )}
           </div>
         </main>
 
-        {/* Optional Footer */}
         <footer className="mt-auto py-4 text-center text-sm text-gray-500">
           <p>© {new Date().getFullYear()} CO2 Tracker App</p>
         </footer>
