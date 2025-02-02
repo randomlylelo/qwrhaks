@@ -77,7 +77,7 @@ export default function EmissionsWrappedPopup() {
     <Dialog open={open} onOpenChange={setOpen}>
       {/* Trigger Button to open popup */}
       <DialogTrigger asChild>
-        <Button className="ml-4 bg-blue-600 text-white font-bold rounded px-4 py-2 text-sm sm:text-base">
+        <Button className="mt-4 px-4 py-2 bg-green-600 text-white font-bold rounded">
           View Your Emissions Wrapped
         </Button>
       </DialogTrigger>
